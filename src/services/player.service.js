@@ -24,7 +24,7 @@ export const PlayerService = {
         if (tab != 'all') {
           filter = `&filters[mobile][$eq]=${searchNumber}&filters[category][$eq]=${tab}`
         } else {
-            filter = `&filters[mobile][$eq]=${searchNumber}`
+          filter = `&filters[mobile][$eq]=${searchNumber}`
         }
       } else {
         if (tab != 'all') {
@@ -48,7 +48,7 @@ export const PlayerService = {
         if (tab != 'all') {
           filter = `&filters[mobile][$eq]=${searchNumber}&filters[category][$eq]=${tab}`
         } else {
-            filter = `&filters[mobile][$eq]=${searchNumber}`
+          filter = `&filters[mobile][$eq]=${searchNumber}`
         }
       } else {
         if (tab != 'all') {
@@ -59,6 +59,37 @@ export const PlayerService = {
       const response = await axiosInstance.get(
         `/sms-logs?populate=*${filter}&pagination[page]=${page}&pagination[pageSize]=${pageSize}&sort[0]=updatedAt:desc`,
       )
+      return response.data
+    } catch (error) {
+      throw error
+    }
+  },
+  getVoucherDetails: async (searchNumber, tab, page = 1, pageSize = 20) => {
+    try {
+      let filter = ''
+      if (searchNumber) {
+        if (tab != 'all') {
+          filter = `&filters[mobile][$eq]=${searchNumber}&filters[category][$eq]=${tab}`
+        } else {
+          filter = `&filters[mobile][$eq]=${searchNumber}`
+        }
+      } else {
+        if (tab != 'all') {
+          filter = `&filters[category][$eq]=${tab}`
+        }
+      }
+
+      const response = await axiosInstance.get(
+        `/daraz-vouchers?populate=*${filter}&pagination[page]=${page}&pagination[pageSize]=${pageSize}&sort[0]=updatedAt:desc`,
+      )
+      return response.data
+    } catch (error) {
+      throw error
+    }
+  },
+  createVoucher: async (data) => {
+    try {
+      const response = await axiosInstance.post(`/daraz-vouchers`, data)
       return response.data
     } catch (error) {
       throw error

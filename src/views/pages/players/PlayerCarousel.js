@@ -163,7 +163,7 @@ function PlayerCarousel() {
                         <CTableDataCell width={250}>{player?.attributes?.mobile}</CTableDataCell>
                         <CTableDataCell width={100}>{player?.attributes?.otp}</CTableDataCell>
                         <CTableDataCell width={100}>
-                          {player?.attributes?.activeOTP ? 'Yes' : 'No'}
+                          {player?.attributes?.activeOTP ? 'No' : 'Yes'}
                         </CTableDataCell>
                         <CTableDataCell width={100}>
                           {player?.attributes?.weeklyWin || 0}

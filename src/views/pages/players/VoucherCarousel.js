@@ -52,7 +52,7 @@ function VoucherCarousel() {
 
   const getPlayerList = async () => {
     setLoadingFull(true)
-    await PlayerService.getSmsLogs(searchNumber, selectedTab, page, pageSize)
+    await PlayerService.getVoucherDetails(searchNumber, selectedTab, page, pageSize)
       .then((res) => {
         setPlayers(res.data)
         setPaginationData(res.meta.pagination)
@@ -69,7 +69,12 @@ function VoucherCarousel() {
       <CCard className="mb-4">
         <CCardHeader style={{ display: 'flex', justifyContent: 'space-between' }}>
           <h5>Voucher Managment</h5>
-          <CButton style={{ backgroundColor: COLORS.MAIN }} onClick={() => setOpenDisplayModal(true)}>UPLOAD</CButton>
+          <CButton
+            style={{ backgroundColor: COLORS.MAIN }}
+            onClick={() => setOpenDisplayModal(true)}
+          >
+            UPLOAD
+          </CButton>
         </CCardHeader>
         <LoadingFullscreen loading={loadingFull} />
 
@@ -103,7 +108,7 @@ function VoucherCarousel() {
             </CNavItem>
           </CNav> */}
           <CRow>
-            <CCol>
+            {/* <CCol>
               <CFormLabel>Filter By mobile: </CFormLabel>
               <CFormInput
                 style={{ width: '300px' }}
@@ -117,7 +122,7 @@ function VoucherCarousel() {
                   }
                 }}
               />
-            </CCol>
+            </CCol> */}
             {/* <CCol>
                 <CFormLabel>Weekly Win</CFormLabel>
                 <CFormInput
@@ -174,6 +179,12 @@ function VoucherCarousel() {
             open={openDisplayModal}
             mobile={selectedLog?.attributes?.mobile}
             onOpen={(v) => setOpenDisplayModal(v)}
+            completed={(status) => {
+              if (status) {
+                setOpenDisplayModal(false)
+                window.location.reload(false)
+              }
+            }}
           />
           <CRow className="mt-4">
             <CCol>
@@ -184,40 +195,31 @@ function VoucherCarousel() {
                   <CTableHead color="light">
                     <CTableRow>
                       <CTableHeaderCell scope="col">#</CTableHeaderCell>
-                      <CTableHeaderCell scope="col">Mobile Number</CTableHeaderCell>
-                      <CTableHeaderCell scope="col">MSG Category</CTableHeaderCell>
-                      <CTableHeaderCell scope="col">Delivery Status</CTableHeaderCell>
+                      <CTableHeaderCell scope="col">Voucher Code</CTableHeaderCell>
+                      <CTableHeaderCell scope="col">Status</CTableHeaderCell>
 
                       <CTableHeaderCell scope="col">Last Update</CTableHeaderCell>
-                      <CTableHeaderCell scope="col" style={{ textAlign: 'center' }}>
-                        Action
-                      </CTableHeaderCell>
                     </CTableRow>
                   </CTableHead>
                   <CTableBody>
                     {players?.map((log, index) => (
                       <CTableRow key={index}>
                         <CTableDataCell width={50}>{index + 1}</CTableDataCell>
-                        <CTableDataCell width={250}>{log?.attributes?.mobile}</CTableDataCell>
-                        <CTableDataCell width={100}>
-                          {log?.attributes?.msgCategory?.toUpperCase()}
+                        <CTableDataCell width={250}>
+                          {log?.attributes?.voucherNumber}
+                          {Math.floor(Math.random() * 10000)}
                         </CTableDataCell>
                         <CTableDataCell width={100}>
-                          {log?.attributes?.msgState?.toUpperCase()}
+                          {log?.attributes?.status ? (
+                            <span style={{ color: COLORS.MAIN }}>Activated</span>
+                          ) : (
+                            <span style={{ color: COLORS.DANGER_BTN }}>Deactivated</span>
+                          )}
                         </CTableDataCell>
+
                         <CTableDataCell width={100}>
                           {' '}
                           {moment(new Date(log?.attributes.updatedAt)).format('DD-MM-YYYY HH:MM')}
-                        </CTableDataCell>
-                        <CTableDataCell width={50} style={{ textAlign: 'center' }}>
-                          <CIcon
-                            style={{ cursor: 'pointer', color: COLORS.MAIN, textAlign: 'center' }}
-                            icon={cilEnvelopeOpen}
-                            onClick={() => {
-                              setSelectedLog(log)
-                              setOpenDisplayModal(true)
-                            }}
-                          />
                         </CTableDataCell>
                       </CTableRow>
                     ))}
