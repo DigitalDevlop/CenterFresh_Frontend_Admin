@@ -1,0 +1,102 @@
+[
+  {
+    "id": 1,
+    "title": "Engineer"
+  },
+  {
+    "id": 2,
+    "title": "Architect"
+  },
+  {
+    "id": 3,
+    "title": "Electrician"
+  },
+  {
+    "id": 4,
+    "title": "Management"
+  },
+  {
+    "id": 5,
+    "title": "Construction"
+  },
+  {
+    "id": 6,
+    "title": "Accountant"
+  },
+  {
+    "id": 7,
+    "title": "Veterinarian"
+  },
+  {
+    "id": 8,
+    "title": "Consultant"
+  },
+  {
+    "id": 9,
+    "title": "Teacher"
+  },
+  {
+    "id": 10,
+    "title": "Technician"
+  },
+  {
+    "id": 11,
+    "title": "Physician"
+  },
+  {
+    "id": 12,
+    "title": "Surveyor"
+  },
+  {
+    "id": 13,
+    "title": "Plumber"
+  },
+  {
+    "id": 14,
+    "title": "Student"
+  },
+  {
+    "id": 15,
+    "title": "Housewife"
+  },
+  {
+    "id": 16,
+    "title": "Self Employment"
+  },
+  {
+    "id": 17,
+    "title": "Businessman"
+  },
+  {
+    "id": 18,
+    "title": "Politician"
+  },
+  {
+    "id": 19,
+    "title": "Armed force"
+  },
+  {
+    "id": 20,
+    "title": "Retired"
+  },
+  {
+    "id": 21,
+    "title": "No Job"
+  },
+  {
+    "id": 22,
+    "title": "Photographer"
+  },
+  {
+    "id": 23,
+    "title": "Driver"
+  },
+  {
+    "id": 24,
+    "title": "Government Server"
+  },
+  {
+    "id": 25,
+    "title": "Other"
+  }
+]

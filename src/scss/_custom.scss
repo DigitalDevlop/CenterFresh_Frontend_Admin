@@ -1,0 +1,35 @@
+// Here you can add other styles
+
+.icon_container {
+    padding: 5%;
+}
+.icon-header-text {
+    font-size: 3rem;
+}
+.dash_icon{
+    color: 'white';
+    font-size: 100px;
+}
+
+@media only screen and (max-width: 600px) {
+    .dash_container {
+        height: 50px
+    }
+
+    .icon_container {
+        padding: 20px
+    }
+
+    .dash_icon {
+        font-size: 20px;
+        height: 10px;
+    }
+
+    .icon-text {
+        font-size: 12px;
+    }
+
+    .icon-header-text {
+        font-size: 1.8rem;
+    }
+  }
