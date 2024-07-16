@@ -21,6 +21,7 @@ import {
 } from '@coreui/react'
 import moment from 'moment'
 import React, { useEffect, useState } from 'react'
+import { exportToExcel } from 'react-json-to-excel'
 import { MODAL_MSGES } from 'src/common/const'
 import LoadingFullscreen from 'src/components/LoadingFullscreen'
 import NoDataArt from 'src/components/NoDataArt'
@@ -39,13 +40,15 @@ function WinnerCarousel() {
   //   const [searchWeeklyWin, setSearchWeeklyWin] = useState(null)
   //   const [searchReloadWin, setSearchReloadWin] = useState(null)
 
+  const [selectedDate, setSelectedDate] = useState(null)
+
   useEffect(() => {
     getPlayerList()
   }, [page, selectedTab])
 
   const getPlayerList = async () => {
     setLoadingFull(true)
-    await PlayerService.getWinners(searchNumber, selectedTab, page, pageSize)
+    await PlayerService.getWinners(searchNumber, selectedTab, page, pageSize, selectedDate)
       .then((res) => {
         setPlayers(res.data)
         setPaginationData(res.meta.pagination)
@@ -56,6 +59,37 @@ function WinnerCarousel() {
         setLoadingFull(false)
       })
   }
+
+  const exportData = async () => {
+    setLoadingFull(true)
+    await PlayerService.getWinners(searchNumber, selectedTab, 1, 9999999999999)
+      .then((res) => {
+        setLoadingFull(false)
+
+        exportToExcel(
+          res.data.map((item) => {
+            return {
+              mobile: item.attributes.mobile,
+              category: item.attributes.category,
+              weeklyWin: item.attributes.player.data.attributes.weeklyWin,
+              darazWin: item.attributes.player.data.attributes.darazWin,
+              reloadWin: item.attributes.player.data.attributes.reloadWin,
+              loginAttempt: item.attributes.player.data.attributes.loginAttempt,
+              last_update: moment(new Date(item.attributes.updatedAt)).format('DD-MM-YYYY LT'),
+            }
+          }),
+          `Full_Report_${new Date().toLocaleString()}`,
+        )
+      })
+      .catch((e) => {
+        console.log(e)
+        setLoadingFull(false)
+      })
+  }
+
+  useEffect(() => {
+    getPlayerList()
+  }, [selectedDate])
 
   return (
     <div>
@@ -95,71 +129,37 @@ function WinnerCarousel() {
             </CNavItem>
           </CNav>
           <CRow>
-            <CCol>
-              <CFormLabel>Filter By mobile: </CFormLabel>
+            <CCol md={4}>
+              <CFormLabel>Filter By mobile: (type & Enter)</CFormLabel>
               <CFormInput
                 style={{ width: '300px' }}
                 type="text"
-                placeholder="947********"
+                placeholder="947******** "
                 value={searchNumber}
                 onChange={(e) => setSearchNumber(e.target.value)}
                 onKeyPress={(e) => {
                   if (e.key == 'Enter') {
+                    setPage(1)
                     getPlayerList()
                   }
                 }}
               />
             </CCol>
-            {/* <CCol>
-                <CFormLabel>Weekly Win</CFormLabel>
-                <CFormInput
-                  style={{ width: '100px' }}
-                  type="number"
-                  placeholder="Type"
-                  value={searchNumber}
-                  onChange={(e) => setSearchNumber(e.target.value)}
-                  onKeyPress={(e) => {
-                    if (e.key == 'Enter') {
-                      getPlayerList()
-                    }
-                  }}
-                />
-              </CCol>
-              <CCol>
-                <CFormLabel>Reload Wins</CFormLabel>
-                <CFormInput
-                  style={{ width: '100px' }}
-                  type="number"
-                  placeholder="Type"
-                  value={searchNumber}
-                  onChange={(e) => setSearchNumber(e.target.value)}
-                  onKeyPress={(e) => {
-                    if (e.key == 'Enter') {
-                      getPlayerList()
-                    }
-                  }}
-                />
-              </CCol>
-              <CCol>
-                <CFormLabel>Daraz Wins</CFormLabel>
-                <CFormInput
-                  style={{ width: '100px' }}
-                  type="number"
-                  placeholder="Type"
-                  value={searchNumber}
-                  onChange={(e) => setSearchNumber(e.target.value)}
-                  onKeyPress={(e) => {
-                    if (e.key == 'Enter') {
-                      getPlayerList()
-                    }
-                  }}
-                />
-              </CCol>
-              <CCol>
-                <CFormLabel></CFormLabel>
-                <br />
-                <CButton className='mt-3' size='sm' onClick={getPlayerList}>Filter Now</CButton>
-              </CCol> */}
+            <CCol>
+              <CFormLabel>Filter By Date: </CFormLabel>
+              <CFormInput
+                style={{ width: '300px' }}
+                type="date"
+                value={selectedDate}
+                onChange={(e) => setSelectedDate(e.target.value)}
+              />
+            </CCol>
+
+            <CCol md={2} style={{ textAlign: 'center' }}>
+              <CButton className="mt-3" size="sm" onClick={exportData}>
+                Export Data
+              </CButton>
+            </CCol>
           </CRow>
           <CRow className="mt-4">
             <CCol>
@@ -190,9 +190,7 @@ function WinnerCarousel() {
 
                         <CTableDataCell width={100}>
                           {' '}
-                          {moment(new Date(player?.attributes.updatedAt)).format(
-                            'DD-MM-YYYY HH:MM',
-                          )}
+                          {moment(new Date(player?.attributes.updatedAt).toLocaleString()).format('DD-MM-YYYY LT')}
                         </CTableDataCell>
                       </CTableRow>
                     ))}

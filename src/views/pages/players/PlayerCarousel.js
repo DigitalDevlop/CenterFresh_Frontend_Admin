@@ -79,6 +79,7 @@ function PlayerCarousel() {
                 onChange={(e) => setSearchNumber(e.target.value)}
                 onKeyPress={(e) => {
                   if (e.key == 'Enter') {
+                    setPage(1)
                     getPlayerList()
                   }
                 }}
@@ -177,7 +178,7 @@ function PlayerCarousel() {
                         <CTableDataCell width={250}>
                           {' '}
                           {moment(new Date(player?.attributes.updatedAt)).format(
-                            'DD-MM-YYYY HH:MM',
+                            'DD-MM-YYYY LT',
                           )}
                         </CTableDataCell>
                       </CTableRow>

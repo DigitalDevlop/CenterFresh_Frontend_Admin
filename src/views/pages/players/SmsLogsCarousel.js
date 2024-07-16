@@ -111,6 +111,7 @@ function SmsLogsCarousel() {
                 onChange={(e) => setSearchNumber(e.target.value)}
                 onKeyPress={(e) => {
                   if (e.key == 'Enter') {
+                    setPage(1)
                     getPlayerList()
                   }
                 }}
@@ -203,7 +204,7 @@ function SmsLogsCarousel() {
                         </CTableDataCell>
                         <CTableDataCell width={100}>
                           {' '}
-                          {moment(new Date(log?.attributes.updatedAt)).format('DD-MM-YYYY HH:MM')}
+                          {moment(new Date(log?.attributes.updatedAt)).format('DD-MM-YYYY LT')}
                         </CTableDataCell>
                         <CTableDataCell width={50} style={{textAlign: 'center'}}>
                           <CIcon

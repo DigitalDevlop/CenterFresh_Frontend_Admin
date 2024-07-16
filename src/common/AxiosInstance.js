@@ -14,6 +14,15 @@ export const axiosInstance = axios.create({
   },
 });
 
+export const axiosInstanceNoAuth = axios.create({
+  baseURL: MAIN_API, // Replace with your API's base URL
+  timeout: 10000, // Set a timeout for requests (optional)
+  headers: {
+    'Content-Type': 'application/json',
+    // Add any custom headers you need here
+  },
+});
+
 
 
 axiosInstance.interceptors.response.use(function (response) {
