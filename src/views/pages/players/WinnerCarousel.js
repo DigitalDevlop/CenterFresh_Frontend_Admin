@@ -62,7 +62,7 @@ function WinnerCarousel() {
 
   const exportData = async () => {
     setLoadingFull(true)
-    await PlayerService.getWinners(searchNumber, selectedTab, 1, 9999999999999)
+    await PlayerService.getWinners(searchNumber, selectedTab, 1, 9999999999999, selectedDate)
       .then((res) => {
         setLoadingFull(false)
 
@@ -78,7 +78,7 @@ function WinnerCarousel() {
               last_update: moment(new Date(item.attributes.updatedAt)).format('DD-MM-YYYY LT'),
             }
           }),
-          `Full_Report_${new Date().toLocaleString()}`,
+          `Full_Winner_Report_${new Date().toLocaleString()}`,
         )
       })
       .catch((e) => {
@@ -88,6 +88,7 @@ function WinnerCarousel() {
   }
 
   useEffect(() => {
+    setPage(1)
     getPlayerList()
   }, [selectedDate])
 
@@ -129,7 +130,7 @@ function WinnerCarousel() {
             </CNavItem>
           </CNav>
           <CRow>
-            <CCol md={4}>
+            <CCol>
               <CFormLabel>Filter By mobile: (type & Enter)</CFormLabel>
               <CFormInput
                 style={{ width: '300px' }}
@@ -156,7 +157,13 @@ function WinnerCarousel() {
             </CCol>
 
             <CCol md={2} style={{ textAlign: 'center' }}>
-              <CButton className="mt-3" size="sm" onClick={exportData}>
+              <CButton
+                className="mt-3"
+                size="sm"
+                color="success"
+                style={{ color: 'white' }}
+                onClick={exportData}
+              >
                 Export Data
               </CButton>
             </CCol>
@@ -190,7 +197,7 @@ function WinnerCarousel() {
 
                         <CTableDataCell width={100}>
                           {' '}
-                          {moment(new Date(player?.attributes.updatedAt).toLocaleString()).format('DD-MM-YYYY LT')}
+                          {moment(new Date(player?.attributes.updatedAt)).format('DD-MM-YYYY LT')}
                         </CTableDataCell>
                       </CTableRow>
                     ))}

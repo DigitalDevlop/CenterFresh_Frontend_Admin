@@ -23,6 +23,7 @@ import {
 } from '@coreui/react'
 import moment from 'moment'
 import React, { useEffect, useState } from 'react'
+import { exportToExcel } from 'react-json-to-excel'
 import { COLORS, MODAL_MSGES } from 'src/common/const'
 import LoadingFullscreen from 'src/components/LoadingFullscreen'
 import DisplayMsgModal from 'src/components/Modals/DisplayMsgModal'
@@ -39,6 +40,7 @@ function SmsLogsCarousel() {
 
   const [searchNumber, setSearchNumber] = useState('')
   const [selectedTab, setSelectedTab] = useState('all')
+  const [selectedDate, setSelectedDate] = useState(null)
   //   const [searchWeeklyWin, setSearchWeeklyWin] = useState(null)
   //   const [searchReloadWin, setSearchReloadWin] = useState(null)
 
@@ -51,7 +53,7 @@ function SmsLogsCarousel() {
 
   const getPlayerList = async () => {
     setLoadingFull(true)
-    await PlayerService.getSmsLogs(searchNumber, selectedTab, page, pageSize)
+    await PlayerService.getSmsLogs(searchNumber, selectedTab, page, pageSize, selectedDate)
       .then((res) => {
         setPlayers(res.data)
         setPaginationData(res.meta.pagination)
@@ -62,6 +64,37 @@ function SmsLogsCarousel() {
         setLoadingFull(false)
       })
   }
+
+  const exportData = async () => {
+    setLoadingFull(true)
+    await PlayerService.getSmsLogs(searchNumber, selectedTab, 1, 9999999999999, selectedDate)
+      .then((res) => {
+        console.log(res)
+
+        exportToExcel(
+          res.data.map((item) => {
+            return {
+              mobile: item.attributes.mobile,
+              category: item.attributes.msgCategory,
+              status: item.attributes.msgState,
+              message: item.attributes.message,
+              last_update: moment(new Date(item.attributes.updatedAt)).format('DD-MM-YYYY LT'),
+            }
+          }),
+          `Full_SMS_Report_${new Date().toLocaleString()}`,
+        )
+        setLoadingFull(false)
+      })
+      .catch((e) => {
+        console.log(e)
+        setLoadingFull(false)
+      })
+  }
+
+  useEffect(() => {
+    setPage(1)
+    getPlayerList()
+  }, [selectedDate])
 
   return (
     <div>
@@ -116,6 +149,27 @@ function SmsLogsCarousel() {
                   }
                 }}
               />
+            </CCol>
+            <CCol>
+              <CFormLabel>Filter By Date: </CFormLabel>
+              <CFormInput
+                style={{ width: '300px' }}
+                type="date"
+                value={selectedDate}
+                onChange={(e) => setSelectedDate(e.target.value)}
+              />
+            </CCol>
+
+            <CCol md={2} style={{ textAlign: 'center' }}>
+              <CButton
+                className="mt-3"
+                size="sm"
+                color="success"
+                style={{ color: 'white' }}
+                onClick={exportData}
+              >
+                Export Data
+              </CButton>
             </CCol>
             {/* <CCol>
                 <CFormLabel>Weekly Win</CFormLabel>
@@ -188,7 +242,9 @@ function SmsLogsCarousel() {
                       <CTableHeaderCell scope="col">Delivery Status</CTableHeaderCell>
 
                       <CTableHeaderCell scope="col">Last Update</CTableHeaderCell>
-                      <CTableHeaderCell scope="col" style={{textAlign: 'center'}}>Action</CTableHeaderCell>
+                      <CTableHeaderCell scope="col" style={{ textAlign: 'center' }}>
+                        Action
+                      </CTableHeaderCell>
                     </CTableRow>
                   </CTableHead>
                   <CTableBody>
@@ -206,9 +262,9 @@ function SmsLogsCarousel() {
                           {' '}
                           {moment(new Date(log?.attributes.updatedAt)).format('DD-MM-YYYY LT')}
                         </CTableDataCell>
-                        <CTableDataCell width={50} style={{textAlign: 'center'}}>
+                        <CTableDataCell width={50} style={{ textAlign: 'center' }}>
                           <CIcon
-                          style={{cursor: 'pointer', color: COLORS.MAIN, textAlign: 'center'}}
+                            style={{ cursor: 'pointer', color: COLORS.MAIN, textAlign: 'center' }}
                             icon={cilEnvelopeOpen}
                             onClick={() => {
                               setSelectedLog(log)

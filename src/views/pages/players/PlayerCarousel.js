@@ -18,6 +18,7 @@ import {
 } from '@coreui/react'
 import moment from 'moment'
 import React, { useEffect, useState } from 'react'
+import { exportToExcel } from 'react-json-to-excel'
 import { MODAL_MSGES } from 'src/common/const'
 import LoadingFullscreen from 'src/components/LoadingFullscreen'
 import NoDataArt from 'src/components/NoDataArt'
@@ -30,10 +31,10 @@ function PlayerCarousel() {
   const [page, setPage] = useState(1)
   const pageSize = 15
   const [paginationData, setPaginationData] = useState(null)
-
+  const [selectedDate, setSelectedDate] = useState(null)
   const [searchNumber, setSearchNumber] = useState('')
-//   const [searchWeeklyWin, setSearchWeeklyWin] = useState(null)
-//   const [searchReloadWin, setSearchReloadWin] = useState(null)
+  //   const [searchWeeklyWin, setSearchWeeklyWin] = useState(null)
+  //   const [searchReloadWin, setSearchReloadWin] = useState(null)
 
   useEffect(() => {
     getPlayerList()
@@ -41,7 +42,7 @@ function PlayerCarousel() {
 
   const getPlayerList = async () => {
     setLoadingFull(true)
-    await PlayerService.getPlayers(searchNumber, page, pageSize)
+    await PlayerService.getPlayers(searchNumber, page, pageSize, selectedDate)
       .then((res) => {
         setPlayers(res.data)
         setPaginationData(res.meta.pagination)
@@ -52,6 +53,39 @@ function PlayerCarousel() {
         setLoadingFull(false)
       })
   }
+
+  const exportData = async () => {
+    setLoadingFull(true)
+    await PlayerService.getPlayers(searchNumber, 1, 9999999999999, selectedDate)
+      .then((res) => {
+        setLoadingFull(false)
+
+        exportToExcel(
+          res.data.map((item) => {
+            return {
+              mobile: item.attributes.mobile,
+              activeOTP: item.attributes.activeOTP ? 'Yes' : 'No',
+              weeklyWin: item.attributes.weeklyWin,
+              darazWin: item.attributes.darazWin,
+              reloadWin: item.attributes.reloadWin,
+              loginAttempt: item.attributes.loginAttempt,
+              otp: item.attributes.otp,
+              last_update: moment(new Date(item.attributes.updatedAt)).format('DD-MM-YYYY LT'),
+            }
+          }),
+          `Full_Player_Report_${new Date().toLocaleString()}`,
+        )
+      })
+      .catch((e) => {
+        console.log(e)
+        setLoadingFull(false)
+      })
+  }
+
+  useEffect(() => {
+    setPage(1)
+    getPlayerList()
+  }, [selectedDate])
 
   return (
     <div>
@@ -84,6 +118,27 @@ function PlayerCarousel() {
                   }
                 }}
               />
+            </CCol>
+            <CCol>
+              <CFormLabel>Filter By Date: </CFormLabel>
+              <CFormInput
+                style={{ width: '300px' }}
+                type="date"
+                value={selectedDate}
+                onChange={(e) => setSelectedDate(e.target.value)}
+              />
+            </CCol>
+
+            <CCol md={2} style={{ textAlign: 'center' }}>
+              <CButton
+                className="mt-3"
+                size="sm"
+                color="success"
+                style={{ color: 'white' }}
+                onClick={exportData}
+              >
+                Export Data
+              </CButton>
             </CCol>
             {/* <CCol>
               <CFormLabel>Weekly Win</CFormLabel>
@@ -151,6 +206,7 @@ function PlayerCarousel() {
                       <CTableHeaderCell scope="col">Weekly Wins</CTableHeaderCell>
                       <CTableHeaderCell scope="col">Reload Wins</CTableHeaderCell>
                       <CTableHeaderCell scope="col">Daraz Wins</CTableHeaderCell>
+                      <CTableHeaderCell scope="col">Login Attempts</CTableHeaderCell>
                       <CTableHeaderCell scope="col">Last Update</CTableHeaderCell>
                       {/* <CTableHeaderCell scope="col" style={{ textAlign: 'end', paddingRight: 25 }}>
                       Action
@@ -175,11 +231,12 @@ function PlayerCarousel() {
                         <CTableDataCell width={100}>
                           {player?.attributes?.darazWin || 0}
                         </CTableDataCell>
+                        <CTableDataCell width={100}>
+                          {player?.attributes?.loginAttempt || 0}
+                        </CTableDataCell>
                         <CTableDataCell width={250}>
                           {' '}
-                          {moment(new Date(player?.attributes.updatedAt)).format(
-                            'DD-MM-YYYY LT',
-                          )}
+                          {moment(new Date(player?.attributes.updatedAt)).format('DD-MM-YYYY LT')}
                         </CTableDataCell>
                       </CTableRow>
                     ))}
