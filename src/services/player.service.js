@@ -10,12 +10,11 @@ export const PlayerService = {
       }
 
       const response = await axiosInstance.get(
-        `/players?populate=*${filter}${
-          date
-            ? `&filters[$and][0][updatedAt][$gte]=${getPreviousDate(
-                date,
-              )}T18:30:00.000Z&filters[$and][1][updatedAt][$lte]=${date}T18:30:00.999Z`
-            : ''
+        `/players?populate=*${filter}${date
+          ? `&filters[$and][0][updatedAt][$gte]=${getPreviousDate(
+            date,
+          )}T18:30:00.000Z&filters[$and][1][updatedAt][$lte]=${date}T18:30:00.999Z`
+          : ''
         }&pagination[page]=${page}&pagination[pageSize]=${pageSize}&sort[0]=updatedAt:desc`,
       )
       return response.data
@@ -23,43 +22,41 @@ export const PlayerService = {
       throw error
     }
   },
+
   getWinners: async (searchNumber, tab, page = 1, pageSize = 20, date) => {
     try {
       let filter = ''
       console.log(searchNumber, tab, { date })
       if (searchNumber) {
         if (tab != 'all') {
-          filter = `&filters[mobile][$eq]=${searchNumber}&filters[category][$eq]=${tab}${
-            date
-              ? `&filters[$and][0][updatedAt][$gte]=${getPreviousDate(
-                  date,
-                )}T18:30:00.000Z&filters[$and][1][updatedAt][$lte]=${date}T18:30:00.999Z`
-              : ''
-          }`
+          filter = `&filters[mobile][$eq]=${searchNumber}&filters[category][$eq]=${tab}${date
+            ? `&filters[$and][0][updatedAt][$gte]=${getPreviousDate(
+              date,
+            )}T18:30:00.000Z&filters[$and][1][updatedAt][$lte]=${date}T18:30:00.999Z`
+            : ''
+            }`
         } else {
-          filter = `&filters[mobile][$eq]=${searchNumber}${
-            date
-              ? `&filters[$and][0][updatedAt][$gte]=${getPreviousDate(
-                  date,
-                )}T18:30:00.000Z&filters[$and][1][updatedAt][$lte]=${date}T18:30:00.999Z`
-              : ''
-          }`
+          filter = `&filters[mobile][$eq]=${searchNumber}${date
+            ? `&filters[$and][0][updatedAt][$gte]=${getPreviousDate(
+              date,
+            )}T18:30:00.000Z&filters[$and][1][updatedAt][$lte]=${date}T18:30:00.999Z`
+            : ''
+            }`
         }
       } else {
         if (tab != 'all') {
-          filter = `&filters[category][$eq]=${tab}${
-            date
-              ? `&filters[$and][0][updatedAt][$gte]=${getPreviousDate(
-                  date,
-                )}T18:30:00.000Z&filters[$and][1][updatedAt][$lte]=${date}T18:30:00.999Z`
-              : ''
-          }`
+          filter = `&filters[category][$eq]=${tab}${date
+            ? `&filters[$and][0][updatedAt][$gte]=${getPreviousDate(
+              date,
+            )}T18:30:00.000Z&filters[$and][1][updatedAt][$lte]=${date}T18:30:00.999Z`
+            : ''
+            }`
           console.log(filter, date)
         } else {
           filter = date
             ? `&filters[$and][0][updatedAt][$gte]=${getPreviousDate(
-                date,
-              )}T18:30:00.000Z&filters[$and][1][updatedAt][$lte]=${date}T18:30:00.999Z`
+              date,
+            )}T18:30:00.000Z&filters[$and][1][updatedAt][$lte]=${date}T18:30:00.999Z`
             : ''
         }
       }
@@ -89,12 +86,11 @@ export const PlayerService = {
       }
 
       const response = await axiosInstance.get(
-        `/sms-logs?populate=*${filter}${
-          date
-            ? `&filters[$and][0][updatedAt][$gte]=${getPreviousDate(
-                date,
-              )}T18:30:00.000Z&filters[$and][1][updatedAt][$lte]=${date}T18:30:00.999Z`
-            : ''
+        `/sms-logs?populate=*${filter}${date
+          ? `&filters[$and][0][updatedAt][$gte]=${getPreviousDate(
+            date,
+          )}T18:30:00.000Z&filters[$and][1][updatedAt][$lte]=${date}T18:30:00.999Z`
+          : ''
         }&pagination[page]=${page}&pagination[pageSize]=${pageSize}&sort[0]=updatedAt:desc`,
       )
       return response.data
@@ -150,6 +146,7 @@ export const PlayerService = {
       throw error
     }
   },
+
 
   getWinnersForChart: async (type) => {
     try {
