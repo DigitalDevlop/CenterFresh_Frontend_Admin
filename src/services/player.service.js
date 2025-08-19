@@ -2,7 +2,7 @@ import TokenService from './TokenService'
 import { axiosInstance, axiosInstanceNoAuth } from 'src/common/AxiosInstance'
 
 export const PlayerService = {
-  getPlayers: async (searchNumber, page = 1, pageSize = 20, date) => {
+  getPlayers: async (searchNumber, page = 1, pageSize = 20, date, dateFiltery = "updatedAt") => {
     try {
       let filter = ''
       if (searchNumber) {
@@ -11,11 +11,11 @@ export const PlayerService = {
 
       const response = await axiosInstance.get(
         `/players?populate=*${filter}${date
-          ? `&filters[$and][0][updatedAt][$gte]=${getPreviousDate(
+          ? `&filters[$and][0][${dateFiltery}][$gte]=${getPreviousDate(
             date,
-          )}T18:30:00.000Z&filters[$and][1][updatedAt][$lte]=${date}T18:30:00.999Z`
+          )}T18:30:00.000Z&filters[$and][1][${dateFiltery}][$lte]=${date}T18:30:00.999Z`
           : ''
-        }&pagination[page]=${page}&pagination[pageSize]=${pageSize}&sort[0]=updatedAt:desc`,
+        }&pagination[page]=${page}&pagination[pageSize]=${pageSize}&sort[0]=${dateFiltery}:desc`,
       )
       return response.data
     } catch (error) {

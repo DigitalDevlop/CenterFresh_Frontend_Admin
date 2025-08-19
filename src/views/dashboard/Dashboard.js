@@ -18,6 +18,7 @@ const dailyMaxQuota = {
 
 const Dashboard = () => {
   const [players, setPlayers] = useState(null)
+  const [dailyRegisteredPlayers, setDailyRegisteredPlayers] = useState(null)
   const [winners, setWinners] = useState(null)
   const [winnerList, setWinnerList] = useState([])
   const [darazWinners, setDarazWinners] = useState(null)
@@ -29,6 +30,7 @@ const Dashboard = () => {
   const [prizeConfigs, setPrizeConfigs] = useState(null)
   const [selectedDate, setSelectedDate] = useState(() => new Date().toISOString().split('T')[0]) // UI only
   const [totalPlayersForDate, setTotalPlayersForDate] = useState(0)
+  const [totalRegisteredPlayersForDate, setTotalRegisteredPlayersForDate] = useState(0)
 
   const [winnersforDate, setWinnersforDate] = useState(null)
   const [darazWinnersForDate, setDarazWinnersForDate] = useState(null)
@@ -42,9 +44,12 @@ const Dashboard = () => {
   const [loadingDailyWinners, setLoadingDailyWinners] = useState(true)
   const [loadingChart, setLoadingChart] = useState(true)
 
+  
+
   useEffect(() => {
     // initial load only (date not used for filtering)
-    getPlayers()
+    getUpdatedPlayers()
+    getDailyRegisteredPlayers()
     getWinners()
     getLogs()
     getVouchers()
@@ -57,16 +62,31 @@ const Dashboard = () => {
       setLoadingDailyPlayers(true)
       setLoadingDailyWinners(true)
       getPlayersForDate()
+      getRegisteredPlayersForDate()
       getWinnersForDate()
     }
   }, [selectedDate])
 
-  const getPlayers = () => {
+  const getUpdatedPlayers = () => {
     setLoadingPlayers(true)
     PlayerService.getPlayers("", 1, 1)
       .then((res) => {
-        console.log("players",res)
+        console.log("players", res)
         setPlayers(res?.meta?.pagination)
+        setLoadingPlayers(false)
+      })
+      .catch((e) => {
+        console.log(e)
+        setLoadingPlayers(false)
+      })
+  }
+
+  const getDailyRegisteredPlayers = () => {
+    setLoadingPlayers(true)
+    PlayerService.getPlayers("", 1, 1, "", "createdAt")
+      .then((res) => {
+        console.log("players", res)
+        setDailyRegisteredPlayers(res?.meta?.pagination)
         setLoadingPlayers(false)
       })
       .catch((e) => {
@@ -80,6 +100,19 @@ const Dashboard = () => {
     PlayerService.getPlayers('', 1, 1, selectedDate)
       .then((res) => {
         setTotalPlayersForDate(res?.meta?.pagination)
+        setLoadingDailyPlayers(false)
+      })
+      .catch((e) => {
+        console.log(e)
+        setLoadingDailyPlayers(false)
+      })
+  }
+
+  const getRegisteredPlayersForDate = () => {
+    setLoadingDailyPlayers(true)
+    PlayerService.getPlayers('', 1, 1, selectedDate, "createdAt")
+      .then((res) => {
+        setTotalRegisteredPlayersForDate(res?.meta?.pagination)
         setLoadingDailyPlayers(false)
       })
       .catch((e) => {
@@ -304,6 +337,7 @@ const Dashboard = () => {
                         <>
                           <div style={{ fontSize: '2.2rem', marginBottom: '10px', color: '#007bff' }}>👥</div>
                           <h5 style={{ margin: '0 0 15px 0', fontWeight: '500', color: '#495057' }}>Total Players</h5>
+
                           <div style={{
                             fontSize: '2.2rem',
                             fontWeight: '600',
@@ -473,12 +507,39 @@ const Dashboard = () => {
                         <>
                           <div style={{ fontSize: '2.2rem', marginBottom: '10px', color: '#dc3545' }}>👥</div>
                           <h5 style={{ margin: '0 0 15px 0', fontWeight: '500', color: '#495057' }}>Daily Players</h5>
-                          <div style={{
+                          {/* <div style={{
                             fontSize: '2.2rem',
                             fontWeight: '600',
                             color: '#212529'
                           }}>
                             {totalPlayersForDate?.total || '0'}
+                          </div> */}
+                          <div style={{
+                            display: 'flex',
+                            justifyContent: 'space-around',
+                            fontSize: '0.8rem'
+                          }}>
+                            <div style={{ textAlign: 'center' }}>
+                              <div style={{
+                                fontSize: '1.2rem',
+                                fontWeight: '600',
+                                color: '#212529'
+                              }}>
+                                {totalRegisteredPlayersForDate?.total || '0'}
+                              </div>
+                              <div style={{ fontSize: '0.7rem', color: '#6c757d' }}>Daily Registered Players</div>
+                            </div>
+                            <div style={{ textAlign: 'center' }}>
+                              <div style={{
+                                fontSize: '1.2rem',
+                                fontWeight: '600',
+                                color: '#212529'
+                              }}>
+                                {totalPlayersForDate?.total || '0'}
+                              </div>
+                              <div style={{ fontSize: '0.7rem', color: '#6c757d' }}>Daily Active Players</div>
+                            </div>
+
                           </div>
                         </>
                       )}
@@ -617,7 +678,7 @@ const Dashboard = () => {
             {/* Chart Section - Keep as requested */}
             <hr />
             <div style={{
-    
+
             }}>
               <h3 style={{
                 color: '#495057',
